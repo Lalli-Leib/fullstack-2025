@@ -27,14 +27,16 @@ const Statistics = ({ good, neutral, bad }) => {
   }
 
   return (
-    <div>
-      <StatisticLine teksti="good" arvo={good} />
-      <StatisticLine teksti="neutral" arvo={neutral} />
-      <StatisticLine teksti="bad" arvo={bad} />
-      <StatisticLine teksti="all" arvo={good + neutral + bad} />
-      <StatisticLine teksti="average" arvo={(good * 1 + neutral * 0 + bad * -1) / (good + neutral + bad)} />
-      <StatisticLine teksti="positive" arvo={(good / (neutral + bad + good) * 100).toFixed(1) + '%'} />
-    </div>
+    <table>
+      <tbody>
+        <StatisticLine teksti="good" arvo={good} />
+        <StatisticLine teksti="neutral" arvo={neutral} />
+        <StatisticLine teksti="bad" arvo={bad} />
+        <StatisticLine teksti="all" arvo={good + neutral + bad} />
+        <StatisticLine teksti="average" arvo={(good * 1 + neutral * 0 + bad * -1) / (good + neutral + bad)} />
+        <StatisticLine teksti="positive" arvo={(good / (neutral + bad + good) * 100).toFixed(1) + '%'} />
+      </tbody>
+    </table>
   )
 }
 
@@ -53,7 +55,6 @@ const App = () => {
       <Button handleClick={() => setBad(bad + 1)} teksti="bad" />
       <Header2 otsikko2={otsikko2} />
       <Statistics good={good} neutral={neutral} bad={bad} />
-
     </div>
   )
 }
