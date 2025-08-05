@@ -9,6 +9,7 @@ const Header2 = ({ otsikko2 }) => {
 }
 
 const Button = ({ handleClick, teksti }) => {
+  console.log(props)
   return <button onClick={handleClick}>{teksti}</button>
 }
 
