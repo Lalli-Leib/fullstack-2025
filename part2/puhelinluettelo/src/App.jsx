@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react'
+import {useState, useEffect} from 'react'
 import personsService from './services/persons'
+import './index.css'
 
-const Filter = ({ filter, handleFilter }) => (
+const Filter = ({filter, handleFilter}) => (
   <div>
     filter shown with: <input value={filter} onChange={handleFilter} />
   </div>
 )
 
-const PersonForm = ({ addPerson, newName, handleName, newNumber, handleNumber }) => (
+const PersonForm = ({addPerson, newName, handleName, newNumber, handleNumber}) => (
   <form onSubmit={addPerson}>
     <div>
       name: <input value={newName} onChange={handleName} />
@@ -21,14 +22,14 @@ const PersonForm = ({ addPerson, newName, handleName, newNumber, handleNumber })
   </form>
 )
 
-const Person = ({ person, handleDelete }) => (
+const Person = ({person, handleDelete}) => (
   <li>
     {person.name} {person.number}
     <button onClick={() => handleDelete(person.id, person.name)}>delete</button>
   </li>
 )
 
-const Persons = ({ persons, handleDelete }) => (
+const Persons = ({persons, handleDelete}) => (
   <ul>
     {persons.map(person => (
       <Person key={person.id} person={person} handleDelete={handleDelete} />
@@ -36,11 +37,24 @@ const Persons = ({ persons, handleDelete }) => (
   </ul>
 )
 
+const Notification = ({message}) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className={'success'}>
+      {message}
+    </div>
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('') 
+  const [successMessage, setSuccessMessage] = useState(null)
 
   useEffect(() => {
     personsService
@@ -86,6 +100,10 @@ const App = () => {
         setPersons(persons.concat(returnedPerson))
         setNewName('')
         setNewNumber('')
+        setSuccessMessage(`Added ${trimmedName}`)
+        setTimeout(() => {
+          setSuccessMessage(null)
+        }, 4000)
       })
   }
 
@@ -103,10 +121,11 @@ const App = () => {
   const personsToShow = persons.filter(person =>
     person.name.toLowerCase().includes(filter.trim().toLowerCase())
   )
-
+  
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={successMessage} />
       <Filter filter={filter} handleFilter={handleFilter} />
       <h2>add a new</h2>
       <PersonForm 
@@ -123,5 +142,3 @@ const App = () => {
 }
 
 export default App ///ÄLÄ POISTA
-
-///ET OO TEHNY 2.15!!!!!
