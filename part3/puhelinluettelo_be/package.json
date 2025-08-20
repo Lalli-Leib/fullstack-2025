@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node index.js",
     "dev": "node --watch index.js",
-    "test": "echo \\\"Error: no test specified\\\" && exit 1"
+    "test": "echo \\\"Error: no test specified\\\" && exit 1",
+    "build:ui": "rm -rf dist && cd ../part2/puhelinluettelo && npm run build && cp -r build/* ../../part3/puhelinluettelo_be/dist",
+    "deploy:full": "npm run build:ui && git add . && git commit -m 'uibuild' && git push"
   },
   "author": "Lauri Ahonen",
   "license": "ISC",
