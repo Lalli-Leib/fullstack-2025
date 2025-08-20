@@ -1,4 +1,3 @@
-const baseUrl = 'http://localhost:3001/api/notes'
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
@@ -8,11 +7,7 @@ let persons = require('./data/persons')
 app.use(express.json())
 app.use(morgan('tiny'))
 app.use(cors())
-
-const getAll = () => {
-  const request = axios.get(baseUrl)
-  return request.then(response => response.data)
-}
+app.use(express.static('dist'))
 
 app.get('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
@@ -70,6 +65,10 @@ app.post('/api/persons', (request, response) => {
 
   persons = persons.concat(person)
   response.status(201).json(person)
+})
+
+app.get('*', (request, response) => {
+  request.sendFile(__dirname + '/dist/index.html')
 })
 
 const PORT = process.env.PORT || 3001
