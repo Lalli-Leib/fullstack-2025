@@ -1,76 +1,64 @@
-const path = require('path')
+require('dotenv').config()
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
-let persons = require('./data/persons')
+const Person = require('./models/persons')
 
 app.use(express.json())
 app.use(morgan('tiny'))
 app.use(express.static('dist'))
 
-app.get('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const person = persons.find(person => person.id === id)
-    if (person) {
-    response.json(person)
-    } 
-    else {
+app.get('/api/persons/:id', async (request, response) => {
+  try {
+    const person = await Person.findById(request.params.id)
+    if (person) return response.json(person)
     response.status(404).end()
-    }
+  } catch {
+    response.status(400).json({ error: 'malformatted id' })
+  }
 })
 
-app.get('/api/persons', (request, response) => {
-  response.json(persons)
+app.get('/api/persons', async (_request, response) => {
+  try {
+    const persons = await Person.find({})
+    response.json(persons)
+  } catch {
+    response.status(500).json({ error: 'server error' })
+  }
 })
 
-app.get('/info', (request, response) => {
-  const length = persons.length
+app.get('/info', async (_request, response) => {
+  const length = await Person.countDocuments({})
   const date = new Date()
   response.send(
     `<p>Phonebook has info for ${length} people</p>
     <p>${date}</p>`
-    )
+  )
 })
 
-app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  persons = persons.filter(person => person.id !== id)
-  response.status(204).end()
+app.delete('/api/persons/:id', async (request, response) => {
+  try {
+    await Person.findByIdAndDelete(request.params.id)
+    response.status(204).end()
+  } catch {
+    response.status(400).json()
+  }
 })
 
-app.post('/api/persons', (request, response) => {
-
+app.post('/api/persons', async (request, response) => {
   const body = request.body
-
   if (!body.name || !body.number) {
-    return response.status(400).json({ 
-        error: 'name or number missing' 
-    })
+    return response.status(400).json({ error: 'name or number missing' })
   }
-
-  if (persons.some(p => p.name === body.name)) {
-    return response.status(400).json({ 
-        error: 'name must be unique' 
-    })
+  const exists = await Person.findOne({ name: body.name })
+  if (exists) {
+    return response.status(400).json({ error: 'name must be unique' })
   }
-
-  const generateId = () => Math.floor(Math.random() * 1000000)
-
-  const person = {
-    id: generateId(),
-    name: body.name,
-    number: body.number
-  }
-
-  persons = persons.concat(person)
-  response.status(201).json(person)
+  const created = await Person.create({ name: body.name, number: body.number })
+  response.status(201).json(created)
 })
 
-app.use((request, response) => {
-  response.sendFile(path.join(__dirname, 'dist', 'index.html'))
-})
-
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })

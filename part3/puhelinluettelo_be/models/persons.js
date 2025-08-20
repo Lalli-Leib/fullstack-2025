@@ -1,0 +1,34 @@
+const mongoose = require('mongoose')
+require('dotenv').config()
+
+mongoose.set('strictQuery', false)
+
+const url = process.env.MONGODB_URI
+if (!url) {
+  process.exit(1)
+}
+
+console.log('connecting to', url)
+mongoose.connect(url)
+  .then(() => {
+    console.log('connected to MongoDB')
+  })
+  .catch((error) => {
+    console.log('error connecting to MongoDB:', error.message)
+    process.exit(1)
+  })
+
+const personSchema = new mongoose.Schema({
+  name: { type: String, required: true, trim: true },
+  number: { type: String, required: true, trim: true }
+})
+
+personSchema.set('toJSON', {
+  transform: (_doc, object) => {
+    object.id = object._id.toString()
+    delete object._id
+    delete object.__v
+  }
+})
+
+module.exports = mongoose.model('Person', personSchema)
