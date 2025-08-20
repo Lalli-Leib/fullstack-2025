@@ -68,7 +68,7 @@ app.post('/api/persons', (request, response) => {
 })
 
 app.get('*', (request, response) => {
-  request.sendFile(__dirname + '/dist/index.html')
+  response.sendFile(__dirname + '/dist/index.html')
 })
 
 const PORT = process.env.PORT || 3001
