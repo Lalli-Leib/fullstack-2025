@@ -1,10 +1,18 @@
+const baseUrl = 'http://localhost:3001/api/notes'
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
+const cors = require('cors')
 let persons = require('./data/persons')
 
 app.use(express.json())
 app.use(morgan('tiny'))
+app.use(cors())
+
+const getAll = () => {
+  const request = axios.get(baseUrl)
+  return request.then(response => response.data)
+}
 
 app.get('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
@@ -64,7 +72,7 @@ app.post('/api/persons', (request, response) => {
   response.status(201).json(person)
 })
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
