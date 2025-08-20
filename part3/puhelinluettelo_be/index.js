@@ -1,3 +1,4 @@
+const path = require('path')
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
@@ -67,8 +68,8 @@ app.post('/api/persons', (request, response) => {
   response.status(201).json(person)
 })
 
-app.get('*', (request, response) => {
-  response.sendFile(__dirname + '/dist/index.html')
+app.get('/*', (request, response) => {
+  response.sendFile(path.join(__dirname, 'dist', 'index.html'))
 })
 
 const PORT = process.env.PORT || 3001
