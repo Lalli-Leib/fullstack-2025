@@ -3,10 +3,15 @@ const express = require('express')
 const app = express()
 const morgan = require('morgan')
 const Person = require('./models/persons')
+const path = require('path')
 
 app.use(express.json())
 app.use(morgan('tiny'))
 app.use(express.static('dist'))
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'))
+})
 
 app.get('/api/persons/:id', async (request, response) => {
   try {
