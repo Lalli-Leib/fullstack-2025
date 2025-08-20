@@ -1,30 +1,35 @@
 const mongoose = require('mongoose')
 
-if (process.argv.length < 3) {
-  console.log('give password as argument')
+const [password, name, number] = process.argv.slice(2)
+if (!password || (!!name ^ !!number)) {
   process.exit(1)
 }
 
-const password = process.argv[2]
-
-const url = `mongodb+srv://fullstack:BLV7XaKZi3GETIse@cluster0.5swzkzf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
+const uri = `mongodb+srv://fullstack:${encodeURIComponent(password)}@cluster0.5swzkzf.mongodb.net/puhelinluettelo?retryWrites=true&w=majority&appName=Cluster0`
 
 mongoose.set('strictQuery', false)
-mongoose.connect(url)
 
-const noteSchema = new mongoose.Schema({
-  content: String,
-  important: Boolean,
-})
+const Person = mongoose.model('Person', new mongoose.Schema({ name: String, number: String }));
 
-const Note = mongoose.model('Note', noteSchema)
+(async () => {
 
-const note = new Note({
-  content: 'HTML is easy',
-  important: true,
-})
+  try {
+    await mongoose.connect(uri)
 
-note.save().then(result => {
-  console.log('note saved!')
-  mongoose.connection.close()
-})
+    if (!name) {
+        const people = await Person.find({})
+        console.log('Phonebook:')
+        people.forEach(p => console.log(`${p.name} ${p.number}`))
+        }
+    else {
+      await Person.create({ name, number })
+      console.log(`Added ${name} number ${number} to phonebook`)
+        }
+  
+    } catch (e) {
+    console.error('Error:', e.message)
+  } finally {
+    await mongoose.connection.close()
+  }
+
+})()
