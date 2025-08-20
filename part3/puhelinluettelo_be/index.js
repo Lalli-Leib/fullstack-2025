@@ -9,9 +9,6 @@ app.use(express.json())
 app.use(morgan('tiny'))
 app.use(express.static('dist'))
 
-app.use((req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'))
-})
 
 app.get('/api/persons/:id', async (request, response) => {
   try {
