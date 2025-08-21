@@ -6,6 +6,7 @@ const Person = require('./models/persons')
 const path = require('path')
 
 const errorHandler = (error, request, response, next) => {
+
   console.error(error.message)
 
   if (error.name === 'CastError') {
@@ -15,6 +16,8 @@ const errorHandler = (error, request, response, next) => {
   if (error.name === 'ValidationError') {
     return response.status(400).json({ error: error.message })
   }
+
+  next(error)
 }
 
 app.use(express.json())
@@ -22,6 +25,7 @@ app.use(morgan('tiny'))
 app.use(express.static('dist'))
 
 app.get('/api/persons/:id', (request, response, next) => {
+
   Person.findById(request.params.id)
     .then(person => {
       if (person) {
@@ -34,6 +38,7 @@ app.get('/api/persons/:id', (request, response, next) => {
 })
 
 app.get('/api/persons', (_request, response, next) => {
+
   Person.find({})
     .then(persons => {
       response.json(persons)
@@ -42,6 +47,7 @@ app.get('/api/persons', (_request, response, next) => {
 })
 
 app.get('/api/info', (_request, response, next) => {
+
   Person.countDocuments({})
     .then(length => {
       const date = new Date()
@@ -54,6 +60,7 @@ app.get('/api/info', (_request, response, next) => {
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
+
   Person.findByIdAndDelete(request.params.id)
     .then(() => {
       response.status(204).end()
@@ -62,6 +69,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
 })
 
 app.post('/api/persons', (request, response, next) => {
+
   const body = request.body
 
   if (!body.name || !body.number) {
@@ -69,6 +77,7 @@ app.post('/api/persons', (request, response, next) => {
   }
 
   Person.findOne({ name: body.name })
+
     .then(exists => {
       if (exists) {
         return response.status(400).json({ error: 'name must be unique' })
@@ -78,7 +87,6 @@ app.post('/api/persons', (request, response, next) => {
         name: body.name,
         number: body.number,
       })
-
       return person.save()
     })
     .then(savedPerson => {

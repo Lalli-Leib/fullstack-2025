@@ -37,13 +37,13 @@ const Persons = ({persons, handleDelete}) => (
   </ul>
 )
 
-const Notification = ({message}) => {
+const Notification = ({message, type}) => {
   if (message === null) {
     return null
   }
 
   return (
-    <div className={'success'}>
+    <div className={type}>
       {message}
     </div>
   )
@@ -55,6 +55,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('') 
   const [successMessage, setSuccessMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null) 
 
   useEffect(() => {
     personsService
@@ -105,6 +106,11 @@ const App = () => {
           setSuccessMessage(null)
         }, 4000)
       })
+      .catch(err => {
+      const msg = err.response?.data?.error || 'Unexpected error'
+      setErrorMessage(msg)
+      setTimeout(() => setErrorMessage(null), 10000)
+    })
   }
 
   const deletePerson = (id, name) => {
@@ -125,7 +131,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={successMessage} />
+      <Notification message={successMessage} type="success" />
+      <Notification message={errorMessage} type = "error"/> 
       <Filter filter={filter} handleFilter={handleFilter} />
       <h2>add a new</h2>
       <PersonForm 
