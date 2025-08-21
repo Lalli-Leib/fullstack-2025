@@ -5,60 +5,91 @@ const morgan = require('morgan')
 const Person = require('./models/persons')
 const path = require('path')
 
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+
+  if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
+  }
+}
+
 app.use(express.json())
 app.use(morgan('tiny'))
 app.use(express.static('dist'))
 
-
-app.get('/api/persons/:id', async (request, response) => {
-  try {
-    const person = await Person.findById(request.params.id)
-    if (person) return response.json(person)
-    response.status(404).end()
-  } catch {
-    response.status(400).json({ error: 'malformatted id' })
-  }
+app.get('/api/persons/:id', (request, response, next) => {
+  Person.findById(request.params.id)
+    .then(person => {
+      if (person) {
+        response.json(person)
+      } else {
+        response.status(404).end()
+      }
+    })
+    .catch(error => next(error))
 })
 
-app.get('/api/persons', async (_request, response) => {
-  try {
-    const persons = await Person.find({})
-    response.json(persons)
-  } catch {
-    response.status(500).json({ error: 'server error' })
-  }
+app.get('/api/persons', (_request, response, next) => {
+  Person.find({})
+    .then(persons => {
+      response.json(persons)
+    })
+    .catch(error => next(error))
 })
 
-app.get('/info', async (_request, response) => {
-  const length = await Person.countDocuments({})
-  const date = new Date()
-  response.send(
-    `<p>Phonebook has info for ${length} people</p>
-    <p>${date}</p>`
-  )
+app.get('/api/info', (_request, response, next) => {
+  Person.countDocuments({})
+    .then(length => {
+      const date = new Date()
+      response.send(
+        `<p>Phonebook has info for ${length} people</p>
+         <p>${date}</p>`
+      )
+    })
+    .catch(error => next(error))
 })
 
-app.delete('/api/persons/:id', async (request, response) => {
-  try {
-    await Person.findByIdAndDelete(request.params.id)
-    response.status(204).end()
-  } catch {
-    response.status(400).json()
-  }
+app.delete('/api/persons/:id', (request, response, next) => {
+  Person.findByIdAndDelete(request.params.id)
+    .then(() => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
-app.post('/api/persons', async (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body
+
   if (!body.name || !body.number) {
     return response.status(400).json({ error: 'name or number missing' })
   }
-  const exists = await Person.findOne({ name: body.name })
-  if (exists) {
-    return response.status(400).json({ error: 'name must be unique' })
-  }
-  const created = await Person.create({ name: body.name, number: body.number })
-  response.status(201).json(created)
+
+  Person.findOne({ name: body.name })
+    .then(exists => {
+      if (exists) {
+        return response.status(400).json({ error: 'name must be unique' })
+      }
+
+      const person = new Person({
+        name: body.name,
+        number: body.number,
+      })
+
+      return person.save()
+    })
+    .then(savedPerson => {
+      if (savedPerson) {
+        response.status(201).json(savedPerson)
+      }
+    })
+    .catch(error => next(error))
 })
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
