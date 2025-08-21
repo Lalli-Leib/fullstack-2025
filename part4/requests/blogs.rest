@@ -1,10 +1,10 @@
-@host = http://localhost:3003
+
 
 ### Haetaan blogit
-GET {{host}}/api/blogs
+GET http://localhost:3003/api/blogs
 
 ### Lisätään
-POST {{host}}/api/blogs
+POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
