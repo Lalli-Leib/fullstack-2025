@@ -17,16 +17,16 @@ const Person = mongoose.model('Person', new mongoose.Schema({ name: String, numb
     await mongoose.connect(uri)
 
     if (!name) {
-        const people = await Person.find({})
-        console.log('Phonebook:')
-        people.forEach(p => console.log(`${p.name} ${p.number}`))
-        }
+      const people = await Person.find({})
+      console.log('Phonebook:')
+      people.forEach(p => console.log(`${p.name} ${p.number}`))
+    }
     else {
       await Person.create({ name, number })
       console.log(`Added ${name} number ${number} to phonebook`)
-        }
-  
-    } catch (e) {
+    }
+
+  } catch (e) {
     console.error('Error:', e.message)
   } finally {
     await mongoose.connection.close()

@@ -3,7 +3,6 @@ const express = require('express')
 const app = express()
 const morgan = require('morgan')
 const Person = require('./models/persons')
-const path = require('path')
 
 const errorHandler = (error, request, response, next) => {
 
