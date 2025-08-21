@@ -1,0 +1,15 @@
+@host = http://localhost:3003
+
+### Haetaan blogit
+GET {{host}}/api/blogs
+
+### Lisätään
+POST {{host}}/api/blogs
+Content-Type: application/json
+
+{
+  "title": "Kissan Blogi",
+  "author": "Tiku T Kissa",
+  "url": "https://Kissan blogi",
+  "likes": 5
+}
