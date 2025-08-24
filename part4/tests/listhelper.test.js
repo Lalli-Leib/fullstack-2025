@@ -2,34 +2,36 @@ const { test, describe } = require('node:test')
 const assert = require('node:assert')
 const listHelper = require('../utils/listhelper')
 
-test('dummy returns one', () => {
-  const blogs = []
-  const result = listHelper.dummy(blogs)
-  assert.strictEqual(result, 1)
-})
+const oneBlog = [
+  {
+    _id: "5a422a851b54a676234d17f7",
+    title: "React patterns",
+    author: "Michael Chan",
+    url: "https://reactpatterns.com/",
+    likes: 7,
+     __v: 0
+  }
+]
 
-describe('total likes', () => {
-  test('of empty list is zero', () => {
-    const result = listHelper.totalLikes([])
-    assert.strictEqual(result, 0)
-  })
+const draw = [
+  {
+    _id: "5a422a851b54a676234d17f7",
+    title: "React patterns",
+    author: "Michael Chan",
+    url: "https://reactpatterns.com/",
+    likes: 7,
+    __v: 0
+  },
+  {
+    _id: "5a422a851b54a676234d43243",
+    title: "React patterns part 2",
+    author: "Michael Chan",
+    url: "https://reactpatterns2.com/",
+    likes: 7,
+    __v: 0
+  },
+]
 
-  test('when list has only one blog equals the likes of that', () => {
-    const oneBlog = [
-      {
-        _id: "5a422a851b54a676234d17f7",
-        title: "React patterns",
-        author: "Michael Chan",
-        url: "https://reactpatterns.com/",
-        likes: 7,
-        __v: 0
-      }
-    ]
-    const result = listHelper.totalLikes(oneBlog)
-    assert.strictEqual(result, 7)
-  })
-
-  test('of a bigger list is calculated right', () => {
 const blogs = [
   {
     _id: "5a422a851b54a676234d17f7",
@@ -80,7 +82,55 @@ const blogs = [
     __v: 0
   }  
 ]
+
+test('dummy returns one', () => {
+  const blogs = []
+  const result = listHelper.dummy(blogs)
+  assert.strictEqual(result, 1)
+})
+
+describe('total likes', () => {
+  test('of empty list is zero', () => {
+    const result = listHelper.totalLikes([])
+    assert.strictEqual(result, 0)
+  })
+
+  test('when list has only one blog equals the likes of that', () => {
+    const result = listHelper.totalLikes(oneBlog)
+    assert.strictEqual(result, 7)
+  })
+
+  test('of a bigger list is calculated right', () => {
     const result = listHelper.totalLikes(blogs)
     assert.strictEqual(result, 36)
+  })
+})
+
+describe('favorite blog', () => {
+  test('of empty list is null', () => {
+    const result = listHelper.favBlog([])
+    assert.strictEqual(result, null)
+  })
+
+  test('when list has only one blog equals that blog', () => {
+    const result = listHelper.favBlog(oneBlog)
+    assert.deepStrictEqual(result, oneBlog[0])
+  })
+
+  test('of a bigger list is the one with most likes', () => {
+    const result = listHelper.favBlog(blogs)
+    assert.deepStrictEqual(result, blogs[2]) // 12 likes
+  })
+
+  test('if multiple favorites exist, returns one of them', () => {
+    const result = listHelper.favBlog(draw)
+    assert.ok([draw[0], draw[1]].some(b => {
+      try {
+        assert.deepStrictEqual(result, b)
+        return true
+      } catch {
+        return false
+      }
+    }))
   })
 })
