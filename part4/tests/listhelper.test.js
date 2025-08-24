@@ -119,7 +119,7 @@ describe('favorite blog', () => {
 
   test('of a bigger list is the one with most likes', () => {
     const result = listHelper.favBlog(blogs)
-    assert.deepStrictEqual(result, blogs[2]) // 12 likes
+    assert.deepStrictEqual(result, blogs[2])
   })
 
   test('if multiple favorites exist, returns one of them', () => {
