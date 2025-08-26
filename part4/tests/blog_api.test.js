@@ -91,3 +91,65 @@ describe('GET /api/blogs', () => {
     await mongoose.connection.close()
   })
 })
+
+describe('POST /api/blogs', () => {
+  before(async () => {
+    await mongoose.connect(MONGODB_URI)
+  })
+
+  beforeEach(async () => {
+    await Blog.deleteMany({})
+    await Blog.insertMany(blogs)
+  })
+
+  test('Adds a test blog and increases blog count by one', async () => {
+    const blog = {
+      title: 'Tiku-kissan blogi',
+      author: 'Tiku Kissa',
+      url: 'http://kissanblogi.com',
+      likes: 42,
+    }
+
+    await api
+
+      .post('/api/blogs')
+      .send(blog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const res = await api.get('/api/blogs').expect(200)
+    assert.strictEqual(res.body.length, blogs.length + 1)
+
+  })
+  after(async () => {
+    await mongoose.connection.close()
+  })
+})
+
+describe('DELETE /api/blogs', () => {
+
+    before(async () => {
+    await mongoose.connect(MONGODB_URI)
+  })
+
+  beforeEach(async () => {
+    await Blog.deleteMany({})
+    await Blog.insertMany(blogs)  
+  })
+
+  test('Deletes a blog and lowers count by one', async () => {
+    const startingBlogs = await Blog.find({})
+    const toDelete = startingBlogs[0]
+
+    await api
+      .delete(`/api/blogs/${toDelete.id}`)
+      .expect(204)
+
+    const blogsAfterDelete = await Blog.find({})
+    assert.strictEqual(blogsAfterDelete.length, startingBlogs.length - 1)
+  })
+    after(async () => {
+    await mongoose.connection.close()
+  })
+})
+
