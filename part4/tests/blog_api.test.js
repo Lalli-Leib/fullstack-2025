@@ -6,7 +6,6 @@ const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
 const { MONGODB_URI } = require('../utils/config')
-
 const api = supertest(app)
 
 const blogs = [
@@ -71,15 +70,15 @@ describe('GET /api/blogs', () => {
     await Blog.insertMany(blogs)
   })
 
-  test('returns JSON with status 200', async () => {
+  test('Returns JSON with status 200', async () => {
     await api.get('/api/blogs').expect(200).expect('Content-Type', /application\/json/)
   })
-  test('returns the correct number of blogs', async () => {
+  test('Returns the correct number of blogs', async () => {
     const response = await api.get('/api/blogs').expect(200)
     assert.strictEqual(response.body.length, blogs.length)
   })
 
-  test('blogs have field id', async () => {
+  test('Blogs have field id', async () => {
     const response = await api.get('/api/blogs').expect(200)
     response.body.forEach(blog => {
       assert.ok(blog.id)
