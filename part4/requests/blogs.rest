@@ -7,33 +7,31 @@ GET http://localhost:3003/api/blogs
 ### Lisätään
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlRpa3VLIiwiaWQiOiI2OGFmNTg0ZDg0OTEzMjYxY2JjNWM4MDAiLCJpYXQiOjE3NTYzODA5MTR9.x_XOt6qeLc4YtR8JxHVRp0qz-VQdTBZRu9XRC96j8bA
 
 {
-  "title": "Kissan Blogi",
-  "author": "Tiku T Kissa",
-  "url": "https://Kissan blogi",
-  "likes": 5
+  "title": "Kissan Blogi 3",
+  "author": "Tiku Kissa",
+  "url": "https://Kissan blogi 3",
+  "likes": 10,
+  "userId" : "68af584d84913261cbc5c800"
 }
-
 ### Luo käyttäjä
 POST http://localhost:3003/api/users
-Content-Type: {{json}}
-
-{
-  "username": "mluukkai",
-  "name": "Matti Luukkainen",
-  "password": "salainen"
-}
-
-
-### Luo käyttäjä
-POST http://localhost:3003/api/users
-
 Content-Type: {{json}}
 
 {
   "username": "TikuK",
   "name": "Tiku Kissa",
+  "password": "Tonnikala"
+}
+
+### Kokeillaan kirjautumista
+POST http://localhost:3003/api/login
+Content-Type: application/json
+
+{
+  "username": "TikuK",
   "password": "Tonnikala"
 }
 
