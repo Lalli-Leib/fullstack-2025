@@ -25,10 +25,10 @@ router.post('/', async (request, response, next) => {
   try {
     const body = request.body
     const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
-  if (!decodedToken.id) {
-    return response.status(401).json({ error: 'token invalid' })
-  }
-  const user = await User.findById(decodedToken.id)
+    if (!decodedToken.id) {
+      return response.status(401).json({ error: 'token invalid' })
+    }
+    const user = await User.findById(decodedToken.id)
 
     if (!user) {
       return response.status(400).json({ error: 'userId puuttuu tai ei kelpaa' })
@@ -40,14 +40,14 @@ router.post('/', async (request, response, next) => {
       url: body.url,
       likes: body.likes,
       user: user._id
-    });
+    })
 
-    const savedBlog = await blog.save();
+    const savedBlog = await blog.save()
 
-    user.blogs = user.blogs.concat(savedBlog._id);
+    user.blogs = user.blogs.concat(savedBlog._id)
     await user.save()
 
-    return response.status(201).json(savedBlog.toJSON());
+    return response.status(201).json(savedBlog.toJSON())
   } catch (error) {
     next(error)
   }
