@@ -1,11 +1,25 @@
+import './index.css'
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import loginService from './services/login'
 import blogService from './services/blogs'
 
+const Notification = ({message, type}) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className={type}>
+      {message}
+    </div>
+  )
+}
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [errorMessage, setErrorMessage] = useState(null)
+  const [successMessage, setSuccessMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -34,6 +48,7 @@ const App = () => {
   }, [])
 
   const handleLogin = async event => {
+    
     event.preventDefault()
     setErrorMessage(null)
     console.log('Logging in with username', username)
@@ -45,9 +60,10 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
-      setErrorMessage(null) 
+      setSuccessMessage(`Logged in as "${user.username}"`)
+      setTimeout(() => setSuccessMessage(null), 5000) 
     } catch {
-      setErrorMessage('wrong credentials')
+      setErrorMessage('Wrong username or password')
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -55,6 +71,8 @@ const App = () => {
   }
 
   const handleLogout = () => {
+    setSuccessMessage(`Logged out succesfully`)
+    setTimeout(() => setSuccessMessage(null), 5000)
     setUser(null)
     setBlogs([])
     blogService.setToken(null)
@@ -71,9 +89,10 @@ const App = () => {
       setTitle('')
       setAuthor('')
       setUrl('')
+      setSuccessMessage(`New blog "${created.title}" added by ${created.author}`)
+      setTimeout(() => setSuccessMessage(null), 5000)
     } catch (err) {
-      console.error('Creating blog failed:', err)
-      setErrorMessage('failed to create blog')
+      setErrorMessage('Failed to create blog')
       setTimeout(() => setErrorMessage(null), 5000)
     }
   }
@@ -143,7 +162,9 @@ const App = () => {
  if (user === null) {
   return (
     <div>
-      <h2>Log in to application</h2>
+      <h2>Log in to app</h2>
+      <Notification message={successMessage} type="success" />
+      <Notification message={errorMessage} type="error" />
       {loginForm()}
     </div>
   )
@@ -152,6 +173,8 @@ const App = () => {
 return (
   <div>
     <h2>Blogs</h2>
+    <Notification message={successMessage} type="success" />
+    <Notification message={errorMessage} type="error" />
     <p> Logged in as: {user.name}</p>
     <p><button onClick={handleLogout}>logout</button></p>
     {blogForm()}
