@@ -3,17 +3,12 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import loginService from './services/login'
 import blogService from './services/blogs'
+import BlogForm from './components/BlogForm'
+import LoginForm from './components/LoginForm'
 
-const Notification = ({message, type}) => {
-  if (message === null) {
-    return null
-  }
-
-  return (
-    <div className={type}>
-      {message}
-    </div>
-  )
+const Notification = ({ message, type }) => {
+  if (message === null) return null
+  return <div className={type}>{message}</div>
 }
 
 const App = () => {
@@ -26,6 +21,7 @@ const App = () => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
+  const [showForm, setShowForm] = useState(false)
 
   useEffect(() => {
     if (!user) return
@@ -48,7 +44,6 @@ const App = () => {
   }, [])
 
   const handleLogin = async event => {
-    
     event.preventDefault()
     setErrorMessage(null)
     console.log('Logging in with username', username)
@@ -61,7 +56,7 @@ const App = () => {
       setUsername('')
       setPassword('')
       setSuccessMessage(`Logged in as "${user.username}"`)
-      setTimeout(() => setSuccessMessage(null), 5000) 
+      setTimeout(() => setSuccessMessage(null), 5000)
     } catch {
       setErrorMessage('Wrong username or password')
       setTimeout(() => {
@@ -71,7 +66,7 @@ const App = () => {
   }
 
   const handleLogout = () => {
-    setSuccessMessage(`Logged out succesfully`)
+    setSuccessMessage('Logged out succesfully')
     setTimeout(() => setSuccessMessage(null), 5000)
     setUser(null)
     setBlogs([])
@@ -80,7 +75,7 @@ const App = () => {
     console.log('Cleared session')
   }
 
-   const addBlog = async (event) => {
+  const addBlog = async (event) => {
     event.preventDefault()
     try {
       const newBlog = { title, author, url }
@@ -91,98 +86,60 @@ const App = () => {
       setUrl('')
       setSuccessMessage(`New blog "${created.title}" added by ${created.author}`)
       setTimeout(() => setSuccessMessage(null), 5000)
+      setShowForm(false)
     } catch (err) {
       setErrorMessage('Failed to create blog')
       setTimeout(() => setErrorMessage(null), 5000)
     }
   }
 
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
+  if (user === null) {
+    return (
       <div>
-        <label>
-          username
-          <input
-            type="text"
-            value={username}
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </label>
+        <h2>Log in to app</h2>
+        <Notification message={successMessage} type="success" />
+        <Notification message={errorMessage} type="error" />
+        <LoginForm
+          username={username}
+          password={password}
+          onUsernameChange={({ target }) => setUsername(target.value)}
+          onPasswordChange={({ target }) => setPassword(target.value)}
+          onSubmit={handleLogin}
+        />
       </div>
-      <div>
-        <label>
-          password
-          <input
-            type="password"
-            value={password}
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </label>
-      </div>
-      <button type="submit">login</button>
-    </form>
-  )
+    )
+  }
 
-  const blogForm = () => (
-    <form onSubmit={addBlog}>
-      <div>
-        <label>
-          title
-          <input
-            type="text"
-            value={title}
-            onChange={({ target }) => setTitle(target.value)}
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          author
-          <input
-            type="text"
-            value={author}
-            onChange={({ target }) => setAuthor(target.value)}
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          url
-          <input
-            type="text"
-            value={url}
-            onChange={({ target }) => setUrl(target.value)}
-          />
-        </label>
-      </div>
-      <button type="submit">create</button>
-    </form>
-  )
-
- if (user === null) {
   return (
     <div>
-      <h2>Log in to app</h2>
+      <h2>Blogs</h2>
       <Notification message={successMessage} type="success" />
       <Notification message={errorMessage} type="error" />
-      {loginForm()}
+      <p> Logged in as: {user.name}</p>
+      <p><button onClick={handleLogout}>logout</button></p>
+
+    {!showForm ? (<button onClick={() => setShowForm(true)}>create a new blog</button>):
+      (
+        <>
+          <BlogForm
+            title={title}
+            author={author}
+            url={url}
+            onTitleChange={({ target }) => setTitle(target.value)}
+            onAuthorChange={({ target }) => setAuthor(target.value)}
+            onUrlChange={({ target }) => setUrl(target.value)}
+            onSubmit={addBlog}
+          />
+          <button onClick={() => setShowForm(false)}>cancel</button>
+        </>
+      )
+    }
+
+      {blogs.map(blog => (
+        <Blog key={blog.id} blog={blog} />
+      ))}
     </div>
   )
-}
-
-return (
-  <div>
-    <h2>Blogs</h2>
-    <Notification message={successMessage} type="success" />
-    <Notification message={errorMessage} type="error" />
-    <p> Logged in as: {user.name}</p>
-    <p><button onClick={handleLogout}>logout</button></p>
-    {blogForm()}
-    {blogs.map(blog => (
-      <Blog key={blog.id} blog={blog} />
-    ))}
-  </div>
-)
 }
 
 export default App
