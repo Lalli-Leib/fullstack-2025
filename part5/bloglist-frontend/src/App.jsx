@@ -18,9 +18,6 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
   const [showForm, setShowForm] = useState(false)
 
   useEffect(() => {
@@ -75,15 +72,10 @@ const App = () => {
     console.log('Cleared session')
   }
 
-  const addBlog = async (event) => {
-    event.preventDefault()
+  const addBlog = async (blog) => {
     try {
-      const newBlog = { title, author, url }
-      const created = await blogService.create(newBlog)
+      const created = await blogService.create(blog)
       setBlogs(blogs.concat(created))
-      setTitle('')
-      setAuthor('')
-      setUrl('')
       setSuccessMessage(`New blog "${created.title}" added by ${created.author}`)
       setTimeout(() => setSuccessMessage(null), 5000)
       setShowForm(false)
@@ -102,8 +94,8 @@ const App = () => {
         <LoginForm
           username={username}
           password={password}
-          onUsernameChange={({ target }) => setUsername(target.value)}
-          onPasswordChange={({ target }) => setPassword(target.value)}
+          onUsernameChange={({target}) => setUsername(target.value)}
+          onPasswordChange={({target}) => setPassword(target.value)}
           onSubmit={handleLogin}
         />
       </div>
@@ -118,22 +110,14 @@ const App = () => {
       <p> Logged in as: {user.name}</p>
       <p><button onClick={handleLogout}>logout</button></p>
 
-    {!showForm ? (<button onClick={() => setShowForm(true)}>create a new blog</button>):
-      (
-        <>
-          <BlogForm
-            title={title}
-            author={author}
-            url={url}
-            onTitleChange={({ target }) => setTitle(target.value)}
-            onAuthorChange={({ target }) => setAuthor(target.value)}
-            onUrlChange={({ target }) => setUrl(target.value)}
-            onSubmit={addBlog}
-          />
-          <button onClick={() => setShowForm(false)}>cancel</button>
-        </>
-      )
-    }
+      {!showForm ? (<button onClick={() => setShowForm(true)}>create a new blog</button>): 
+        (
+          <>
+            <BlogForm onSubmit={addBlog} />
+            <button onClick={() => setShowForm(false)}>cancel</button>
+          </>
+        )
+      }
 
       {blogs.map(blog => (
         <Blog key={blog.id} blog={blog} />
