@@ -76,11 +76,27 @@ const App = () => {
     try {
       const created = await blogService.create(blog)
       setBlogs(blogs.concat(created))
+      console.log('Created a new blog:', {title: created.title })
       setSuccessMessage(`New blog "${created.title}" added by ${created.author}`)
       setTimeout(() => setSuccessMessage(null), 5000)
       setShowForm(false)
     } catch (err) {
       setErrorMessage('Failed to create blog')
+      setTimeout(() => setErrorMessage(null), 5000)
+    }
+  }
+
+  const handleLike = async (blog) => {
+    try {
+      const userField = blog.user && typeof blog.user === 'object' ? blog.user.id : blog.user
+      const updated = { ...blog, likes: (blog.likes || 0) + 1, user: userField }
+      const saved = await blogService.update(blog.id, updated)
+      setBlogs(prev => prev.map(b => (b.id === blog.id ? saved : b)))
+      console.log('Liked a blog:',{ title: saved.title})
+      setSuccessMessage(`Liked "${saved.title}`)
+      setTimeout(() => setSuccessMessage(null), 5000)
+    } catch (err) {
+      setErrorMessage('Failed to like blog')
       setTimeout(() => setErrorMessage(null), 5000)
     }
   }
@@ -118,9 +134,12 @@ const App = () => {
           </>
         )
       }
-
       {blogs.map(blog => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog
+          key={blog.id}
+          blog={blog}
+          onLike={() => handleLike(blog)}
+        />
       ))}
     </div>
   )

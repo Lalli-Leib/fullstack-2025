@@ -12,8 +12,6 @@ const Blog = ({ blog, onLike }) => {
     paddingTop: 10,
     paddingBottom: 10,
     paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 2,
     marginBottom: 10
   }
 
@@ -28,15 +26,16 @@ const Blog = ({ blog, onLike }) => {
   }
 
   return (
-    <div>
-      <div style={blogMin}>
-        {blog.title}
-        <button style={{ marginLeft: '10px' }} onClick={toggleVisibility}> {visible ? 'hide' : 'view'}</button>
-      </div>
+    <div style={blogMin}>
+      {blog.title}
+      <button style={{ marginLeft: '10px' }} onClick={toggleVisibility}>
+        {visible ? 'hide' : 'view'}
+      </button>
+
       {visible && (
         <div style={blogMax}>
           <div>Url: {blog.url}</div>
-          <div>Likes: {blog.likes} <button onClick={onLike}>like</button> </div>
+          <div>Likes: {blog.likes} <button onClick={onLike}>like</button></div>
           <div>Author: {blog.author}</div>
         </div>
       )}
