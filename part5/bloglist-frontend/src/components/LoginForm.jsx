@@ -1,4 +1,4 @@
-const LoginForm = ({username,password,onUsernameChange,onPasswordChange,onSubmit}) => {
+const LoginForm = ({ username,password,onUsernameChange,onPasswordChange,onSubmit }) => {
   return (
     <div>
       <form onSubmit={onSubmit}>

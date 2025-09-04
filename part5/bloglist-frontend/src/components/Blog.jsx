@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const Blog = ({ blog, onLike }) => {
+const Blog = ({ blog, onLike, onRmv }) => {
 
   const [visible, setVisible] = useState(false)
 
@@ -37,6 +37,7 @@ const Blog = ({ blog, onLike }) => {
           <div>Url: {blog.url}</div>
           <div>Likes: {blog.likes} <button onClick={onLike}>like</button></div>
           <div>Author: {blog.author}</div>
+          <div><button onClick={onRmv}>remove</button></div>
         </div>
       )}
     </div>
