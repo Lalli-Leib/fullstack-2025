@@ -15,7 +15,7 @@ test('Renders blog title but not other fields', () => {
   render(<Blog blog={blog} />)
 
   expect(screen.getByText('Testiblogi')).toBeInTheDocument()
-  expect(screen.queryByText(/Valtteri Kissa/)).not.toBeInTheDocument()
-  expect(screen.queryByText(/http:\/\/vblogi\.com/)).not.toBeInTheDocument()
-  expect(screen.queryByText(/Likes:/)).not.toBeInTheDocument()
+  expect(screen.queryByText(/Author:/i)).not.toBeInTheDocument()
+  expect(screen.queryByText(/Url:/i)).not.toBeInTheDocument()
+  expect(screen.queryByText(/Likes:/i)).not.toBeInTheDocument()
 })
