@@ -25,9 +25,10 @@ const App = () => {
     blogService
       .getAll()
       .then(fetched => {
-        console.log('Blogs:', fetched)
-        setBlogs(fetched)
-      })
+        const sorted = [...fetched].sort((a, b) => b.likes - a.likes)
+        setBlogs(sorted)
+      }
+    )
       .catch(err => console.error('Fetching blogs failed:', err))
   }, [user])
 
@@ -75,7 +76,7 @@ const App = () => {
   const addBlog = async (blog) => {
     try {
       const created = await blogService.create(blog)
-      setBlogs(blogs.concat(created))
+      setBlogs(prev => [...prev, created].sort((a, b) => b.likes - a.likes))
       console.log('Created a new blog:', {title: created.title })
       setSuccessMessage(`New blog "${created.title}" added by ${created.author}`)
       setTimeout(() => setSuccessMessage(null), 5000)
@@ -93,7 +94,7 @@ const App = () => {
       const saved = await blogService.update(blog.id, updated)
       setBlogs(prev => prev.map(b => (b.id === blog.id ? saved : b)))
       console.log('Liked a blog:',{ title: saved.title})
-      setSuccessMessage(`Liked "${saved.title}`)
+      setSuccessMessage(`Liked ${saved.title}`)
       setTimeout(() => setSuccessMessage(null), 5000)
     } catch (err) {
       setErrorMessage('Failed to like blog')
