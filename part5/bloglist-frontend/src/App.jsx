@@ -92,21 +92,25 @@ const addBlog = async (blog) => {
   }
 }
 
-  const handleLike = async (blog) => {
-    try {
-      const userField = blog.user && typeof blog.user === 'object' ? blog.user.id : blog.user
-      const updated = { ...blog, likes: (blog.likes || 0) + 1, user: userField }
-      const saved = await blogService.update(blog.id, updated)
-      setBlogs(prev => prev.map(b => (b.id === blog.id ? saved : b)))
-      console.log('Liked a blog:',{ title: saved.title})
-      setSuccessMessage(`Liked ${saved.title}`)
-      setTimeout(() => setSuccessMessage(null), 5000)
-    } catch (err) {
-      setErrorMessage('Failed to like blog')
-      setTimeout(() => setErrorMessage(null), 5000)
-      console.error('Like failed:', err)
-    }
+ const handleLike = async (blog) => {
+  try {
+    const userField = blog.user && typeof blog.user === 'object' ? blog.user.id : blog.user
+    const updated = { ...blog, likes: (blog.likes || 0) + 1, user: userField }
+    const saved = await blogService.update(blog.id, updated)
+    setBlogs(prev =>
+      prev
+        .map(b => (b.id === blog.id ? saved : b))
+        .sort((a, b) => b.likes - a.likes) 
+    )
+    console.log('Liked a blog:', { title: saved.title })
+    setSuccessMessage(`Liked ${saved.title}`)
+    setTimeout(() => setSuccessMessage(null), 5000)
+  } catch (err) {
+    setErrorMessage('Failed to like blog')
+    setTimeout(() => setErrorMessage(null), 5000)
+    console.error('Like failed:', err)
   }
+}
 
   const handleRemove = async (blog) => {
     const ok = window.confirm(`Remove ${blog.title}`)

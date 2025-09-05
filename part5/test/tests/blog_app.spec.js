@@ -99,5 +99,16 @@ describe('Blog app', () => {
             const card = page.locator('div', { hasText: /^Otsikko\b/ }).first()
             await expect(card.getByRole('button', { name: 'remove' })).toHaveCount(0)
         })
+
+            test('The bloglist is sorted by the amount of likes', async ({ page }) => {
+            await createBlog(page, 'Otsikko', 'Kirjoittaja', 'https://esimerkki.fi')
+            await page.getByRole('button', { name: 'view' }).click()
+            await page.getByRole('button', { name: 'like' }).click()
+            await page.getByRole('button', { name: 'hide' }).click()
+            await createBlog(page, 'Otsikko2', 'Kirjoittaja2', 'https://esimerkki2.fi')
+            const expected = 'Otsikko'
+            const firstCard = page.locator('[data-testid="blog-list"] > div').first()
+            await expect(firstCard).toHaveText(new RegExp(`^\\s*${expected}(?=\\s*(?:view|hide))`, 'i'))
+        })
     })
 })
