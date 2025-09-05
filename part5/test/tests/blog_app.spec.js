@@ -81,5 +81,23 @@ describe('Blog app', () => {
             await page.getByRole('button', { name: 'remove' }).click()
             await expect(page.getByText('Removed Otsikko')).toBeVisible()
         })
+
+            test('Remove button is only shwon to user who added the blog', async ({ page, request }) => {
+            await createBlog(page, 'Otsikko', 'Kirjoittaja', 'https://esimerkki.fi')
+            await page.getByRole('button', { name: 'logout' }).click()
+
+            await request.post('http://localhost:3003/api/users', {
+                data: {
+                name: 'Mille Kissa',
+                username: 'miltsukka',
+                password: 'Hiiri'
+                }
+            })
+            
+            await loginWith(page, 'miltsukka', 'Hiiri')
+            await page.getByRole('button', { name: 'view' }).click()
+            const card = page.locator('div', { hasText: /^Otsikko\b/ }).first()
+            await expect(card.getByRole('button', { name: 'remove' })).toHaveCount(0)
+        })
     })
 })
