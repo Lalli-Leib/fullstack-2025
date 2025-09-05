@@ -78,7 +78,7 @@ const App = () => {
       const created = await blogService.create(blog)
       setBlogs(prev => [...prev, created].sort((a, b) => b.likes - a.likes))
       console.log('Created a new blog:', {title: created.title })
-      setSuccessMessage(`New blog "${created.title}" added by ${created.author}`)
+      setSuccessMessage(`New blog ${created.title} added by ${created.author}`)
       setTimeout(() => setSuccessMessage(null), 5000)
       setShowForm(false)
     } catch (err) {
@@ -156,6 +156,7 @@ const App = () => {
           </>
         )
       }
+      <div data-testid="blog-list">
       {blogs.map(blog => (
         <Blog
           key={blog.id}
@@ -164,6 +165,7 @@ const App = () => {
           onRmv={() => handleRemove(blog)}
         />
       ))}
+      </div>
     </div>
   )
 }
