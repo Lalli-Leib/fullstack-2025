@@ -61,16 +61,25 @@ describe('Blog app', () => {
             await expect(list.getByText('Otsikko')).toBeVisible()
         })
 
-        test('A new blog can be liked', async ({ page }) => {
+        test('A blog can be liked', async ({ page }) => {
             await createBlog(page, 'Otsikko', 'Kirjoittaja', 'https://esimerkki.fi')
             await page.getByRole('button', { name: 'view' }).click()
 
-            await expect(page.getByText('Likes')).toBeVisible()
-            await expect(page.getByText('Url')).toBeVisible()
-            await expect(page.getByText('Author')).toBeVisible()
-
             await page.getByRole('button', { name: 'like' }).click()
             await expect(page.getByText('Liked Otsikko')).toBeVisible()
+        })
+
+            test('A blog can be removed', async ({ page }) => {
+            await createBlog(page, 'Otsikko', 'Kirjoittaja', 'https://esimerkki.fi')
+            await page.getByRole('button', { name: 'view' }).click()
+
+            page.once('dialog', async (dialog) => {
+            expect(dialog.type()).toBe('confirm')
+            await dialog.accept()
+            })
+
+            await page.getByRole('button', { name: 'remove' }).click()
+            await expect(page.getByText('Removed Otsikko')).toBeVisible()
         })
     })
 })

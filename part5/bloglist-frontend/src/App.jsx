@@ -73,20 +73,24 @@ const App = () => {
     console.log('Cleared session')
   }
 
-  const addBlog = async (blog) => {
-    try {
-      const created = await blogService.create(blog)
-      setBlogs(prev => [...prev, created].sort((a, b) => b.likes - a.likes))
-      console.log('Created a new blog:', {title: created.title })
-      setSuccessMessage(`New blog ${created.title} added by ${created.author}`)
-      setTimeout(() => setSuccessMessage(null), 5000)
-      setShowForm(false)
-    } catch (err) {
-      setErrorMessage('Failed to create blog')
-      setTimeout(() => setErrorMessage(null), 5000)
-      console.error('Create failed:', err)
-    }
+const addBlog = async (blog) => {
+  try {
+    const created = await blogService.create(blog)
+
+    const fetched = await blogService.getAll()
+    const sorted = [...fetched].sort((a, b) => b.likes - a.likes)
+    setBlogs(sorted)
+
+    console.log('Created a new blog:', { title: created.title })
+    setSuccessMessage(`New blog ${created.title} added by ${created.author}`)
+    setTimeout(() => setSuccessMessage(null), 5000)
+    setShowForm(false)
+  } catch (err) {
+    setErrorMessage('Failed to create blog')
+    setTimeout(() => setErrorMessage(null), 5000)
+    console.error('Create failed:', err)
   }
+}
 
   const handleLike = async (blog) => {
     try {
@@ -161,6 +165,7 @@ const App = () => {
         <Blog
           key={blog.id}
           blog={blog}
+          currentUser={user}
           onLike={() => handleLike(blog)}
           onRmv={() => handleRemove(blog)}
         />

@@ -1,7 +1,6 @@
 import { useState } from 'react'
 
-const Blog = ({ blog, onLike, onRmv }) => {
-
+const Blog = ({ blog, onLike, onRmv, currentUser }) => {
   const [visible, setVisible] = useState(false)
 
   const toggleVisibility = () => {
@@ -25,19 +24,23 @@ const Blog = ({ blog, onLike, onRmv }) => {
     marginTop: 10
   }
 
+  const ownerUsername = blog.user && typeof blog.user === 'object' ? blog.user.username : null
+  const isOwner = Boolean(currentUser?.username && ownerUsername && currentUser.username === ownerUsername)
+
   return (
     <div style={blogMin}>
       {blog.title}
       <button style={{ marginLeft: '10px' }} onClick={toggleVisibility}>
         {visible ? 'hide' : 'view'}
       </button>
-
       {visible && (
         <div style={blogMax}>
           <div>Url: {blog.url}</div>
           <div>Likes: {blog.likes} <button onClick={onLike}>like</button></div>
           <div>Author: {blog.author}</div>
-          <div><button onClick={onRmv}>remove</button></div>
+          {isOwner && (
+            <div><button onClick={onRmv}>remove</button></div>
+          )}
         </div>
       )}
     </div>
